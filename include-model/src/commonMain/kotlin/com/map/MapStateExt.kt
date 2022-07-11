@@ -1,5 +1,7 @@
 package com.map
 
+import androidx.compose.ui.geometry.Offset
+
 fun InternalMapState.geoLengthToDisplay(geoLength: Double): Int {
     return (height * geoLength * scale).toInt()
 }
@@ -25,13 +27,14 @@ val InternalMapState.maxScale get():Double = (TILE_SIZE.toDouble() / height) * p
  * Функция 2^x
  */
 fun pow2(x: Int): Int {
-    if (x < 0) {
-        return 0
-    }
+    if (x < 0) return 0
     return 1 shl x
 }
+operator fun Offset.times(number: Double) = Offset(x * number.toFloat(), y * number.toFloat())
+operator fun Offset.plus(pt: Pt) = Offset(x + pt.x.toFloat(), y + pt.y.toFloat())
+operator fun Offset.minus(pt: Pt) = Offset(x - pt.x.toFloat(), y - pt.y.toFloat())
 
-fun InternalMapState.zoom(zoomCenter:Pt?, change:Double):InternalMapState {
+fun InternalMapState.zoom(zoomCenter: Pt?, change: Double): InternalMapState {
     val state = this
     val pt = zoomCenter ?: Pt(state.width / 2, state.height / 2)
     var multiply = (1 + change)
@@ -40,6 +43,7 @@ fun InternalMapState.zoom(zoomCenter:Pt?, change:Double):InternalMapState {
     } else if (multiply > Config.MAX_SCALE_ON_SINGLE_ZOOM_EVENT) {
         multiply = Config.MAX_SCALE_ON_SINGLE_ZOOM_EVENT
     }
+    multiply = if (multiply > 1) multiply + 0.05 else multiply - 0.05
     var scale = state.scale * multiply
     if (scale < state.minScale) {
         scale = state.minScale
@@ -49,5 +53,8 @@ fun InternalMapState.zoom(zoomCenter:Pt?, change:Double):InternalMapState {
     }
     val scaledState = state.copy(scale = scale)
     val geoDelta = state.displayToGeo(pt) - scaledState.displayToGeo(pt)
-    return scaledState.copy(topLeft = scaledState.topLeft + geoDelta).correctGeoXY()
+
+    return scaledState.copy(
+        topLeft = scaledState.topLeft + geoDelta,
+    ).correctGeoXY()
 }

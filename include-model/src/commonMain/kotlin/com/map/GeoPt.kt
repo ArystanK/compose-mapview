@@ -1,5 +1,6 @@
 package com.map
 
+import androidx.compose.ui.geometry.Offset
 import kotlin.math.*
 
 /**
@@ -20,6 +21,8 @@ val GeoPt.latitude
         val latRad = atan(sinh(PI * (1 - 2 * y)))
         return latRad / PI * 180.0
     }
+
+fun Pt.toOffset() = Offset(x.toFloat(), y.toFloat())
 
 fun createGeoPt(latitude: Double, longitude: Double): GeoPt {
     val x = (longitude + 180) / 360

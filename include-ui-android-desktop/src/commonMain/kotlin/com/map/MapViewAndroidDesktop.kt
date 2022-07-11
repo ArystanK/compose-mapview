@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -13,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -20,19 +22,20 @@ import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
+import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 @Composable
 fun MapViewAndroidDesktop(
     modifier: Modifier,
-    isInTouchMode: Boolean,
+    isInTouchMode: Boolean = false,
     tiles: List<DisplayTileWithImage<TileImage>>,
     onZoom: (Pt?, Double) -> Unit,
     onClick: (Pt) -> Unit,
     onMove: (Int, Int) -> Unit,
-    updateSize: (width: Int, height: Int) -> Unit
+    updateSize: (width: Int, height: Int) -> Unit,
+    mapState: InternalMapState,
+    markers: List<MarkerData>
 ) {
     var previousMoveDownPos by remember { mutableStateOf<Offset?>(null) }
     var previousPressTime by remember { mutableStateOf(0L) }
@@ -125,7 +128,7 @@ fun MapViewAndroidDesktop(
             }
     ) {
         updateSize(size.width.toInt(), size.height.toInt())
-        clipRect() {
+        clipRect {
             tiles.forEach { (t, img) ->
                 if (img != null) {
                     val size = IntSize(t.size, t.size)
@@ -144,5 +147,10 @@ fun MapViewAndroidDesktop(
             addRect(Rect(0f, 0f, size.width, size.height))
         }, color = Color.Red, style = Stroke(4f))
     }
+
+    MarkerComposer(
+        markers = markers,
+        mapState = mapState,
+    )
 }
 

@@ -15,7 +15,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation("com.map:mapview:1.0-SNAPSHOT")
-                implementation("com.map:secret:1.0-SNAPSHOT")
+                implementation("com.map:model:1.0-SNAPSHOT")
             }
         }
     }

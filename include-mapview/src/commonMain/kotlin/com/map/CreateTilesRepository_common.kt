@@ -12,7 +12,6 @@ import kotlin.coroutines.CoroutineContext
 @Composable
 internal expect fun rememberTilesRepository(
     ioScope: CoroutineScope,
-    mapTilerSecretKey: String
 ): ContentRepository<Tile, TileImage>
 
 internal expect fun getDispatcherIO(): CoroutineContext

@@ -2,7 +2,6 @@ package com.map
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.flow.StateFlow
 
 actual typealias DisplayModifier = Modifier
 
@@ -13,16 +12,19 @@ internal actual fun PlatformMapView(
     onZoom: (Pt?, Double) -> Unit,
     onClick: (Pt) -> Unit,
     onMove: (Int, Int) -> Unit,
-    updateSize: (width: Int, height: Int) -> Unit
+    updateSize: (width: Int, height: Int) -> Unit,
+    mapState: InternalMapState,
+    markers: List<MarkerData>
 ) {
     MapViewAndroidDesktop(
         modifier = modifier,
-        isInTouchMode = false,
         tiles = tiles,
         onZoom = onZoom,
         onClick = onClick,
         onMove = onMove,
-        updateSize = updateSize
+        updateSize = updateSize,
+        mapState = mapState,
+        markers = markers
     )
 }
 

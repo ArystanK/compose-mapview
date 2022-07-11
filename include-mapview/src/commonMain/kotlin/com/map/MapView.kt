@@ -1,6 +1,7 @@
 package com.map
 
 import androidx.compose.runtime.*
+import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.*
 
 data class MapState(
@@ -43,7 +44,6 @@ data class MapState(
 @Composable
 public fun MapView(
     modifier: DisplayModifier,
-    mapTilerSecretKey: String,
     latitude: Double? = null,
     longitude: Double? = null,
     startScale: Double? = null,
@@ -52,17 +52,18 @@ public fun MapView(
     },
     onStateChange: (MapState) -> Unit = { (state as? MutableState<MapState>)?.value = it },
     onMapViewClick: (latitude: Double, longitude: Double) -> Boolean = { lat, lon -> true },
+    markers: List<MarkerData>
 ) {
     val viewScope = rememberCoroutineScope()
     val ioScope = remember { CoroutineScope(SupervisorJob(viewScope.coroutineContext.job) + getDispatcherIO()) }
-    val imageRepository = rememberTilesRepository(ioScope, mapTilerSecretKey)
+    val imageRepository = rememberTilesRepository(ioScope)
 
     var width: Int by remember { mutableStateOf(100) }
     var height: Int by remember { mutableStateOf(100) }
     var cache: Map<Tile, TileImage> by remember { mutableStateOf(mapOf()) }
     val internalState: InternalMapState by derivedStateOf {
         val center = createGeoPt(state.value.latitude, state.value.longitude)
-        InternalMapState(width, height, state.value.scale)
+        InternalMapState(width, height, state.value.scale, markers = markers)
             .copyAndChangeCenter(center)
     }
     val displayTiles: List<DisplayTileWithImage<TileImage>> by derivedStateOf {
@@ -106,17 +107,21 @@ public fun MapView(
         },
         onMove = { dx, dy ->
             val topLeft = internalState.topLeft + internalState.displayLengthToGeo(Pt(-dx, -dy))
-            onStateChange(internalState.copy(topLeft = topLeft).correctGeoXY().toExternalState())
+            onStateChange(
+                internalState.copy(
+                    topLeft = topLeft,
+                    markers = markers.onEach { it.absoluteOffset += Offset(dx.toFloat(), dy.toFloat()) }
+                ).correctGeoXY().toExternalState()
+            )
         },
         updateSize = { w, h ->
             width = w
             height = h
             onStateChange(internalState.copy(width = w, height = h).toExternalState())
-        }
+        },
+        mapState = internalState,
+        markers = internalState.markers
     )
-    if (Config.DISPLAY_TELEMETRY) {
-        Telemetry(internalState)
-    }
 }
 
 expect interface DisplayModifier

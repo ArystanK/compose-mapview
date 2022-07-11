@@ -18,5 +18,7 @@ internal expect fun PlatformMapView(
     onZoom: (Pt?, Double) -> Unit,
     onClick: (Pt) -> Unit,
     onMove: (Int, Int) -> Unit,
-    updateSize: (width: Int, height: Int) -> Unit
+    updateSize: (width: Int, height: Int) -> Unit,
+    mapState: InternalMapState,
+    markers: List<MarkerData>
 )

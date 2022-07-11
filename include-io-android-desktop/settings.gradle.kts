@@ -11,7 +11,6 @@ pluginManagement {
 
         kotlin("jvm").version(kotlinVersion)
         kotlin("multiplatform").version(kotlinVersion)
-        kotlin("android").version(kotlinVersion)
         id("com.android.library").version(agpVersion)
     }
 }

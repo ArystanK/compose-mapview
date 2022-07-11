@@ -5,6 +5,7 @@ data class InternalMapState(
     val height: Int = 100,//display height in dp (pixels)
     val scale: Double = 1.0,
     val topLeft: GeoPt = GeoPt(0.0, 0.0),
+    val markers: List<MarkerData> = emptyList()
 )
 
 data class DisplayTileWithImage<T>(
