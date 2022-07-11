@@ -1,5 +1,5 @@
 # MapView
-Composable UI component for Desktop, Android and Browser
+Composable UI component for Desktop
 
 ## Usage
 ```Kotlin
