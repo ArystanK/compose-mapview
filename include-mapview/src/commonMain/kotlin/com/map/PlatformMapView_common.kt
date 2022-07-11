@@ -20,5 +20,6 @@ internal expect fun PlatformMapView(
     onMove: (Int, Int) -> Unit,
     updateSize: (width: Int, height: Int) -> Unit,
     mapState: InternalMapState,
-    markers: List<MarkerData>
+    markers: List<MarkerData>,
+    routes: List<List<Pt>>
 )

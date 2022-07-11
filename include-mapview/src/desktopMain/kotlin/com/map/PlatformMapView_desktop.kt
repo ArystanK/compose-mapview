@@ -14,7 +14,8 @@ internal actual fun PlatformMapView(
     onMove: (Int, Int) -> Unit,
     updateSize: (width: Int, height: Int) -> Unit,
     mapState: InternalMapState,
-    markers: List<MarkerData>
+    markers: List<MarkerData>,
+    routes: List<List<Pt>>
 ) {
     MapViewAndroidDesktop(
         modifier = modifier,
@@ -24,7 +25,8 @@ internal actual fun PlatformMapView(
         onMove = onMove,
         updateSize = updateSize,
         mapState = mapState,
-        markers = markers
+        markers = markers,
+        routes = routes
     )
 }
 

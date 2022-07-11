@@ -52,7 +52,8 @@ public fun MapView(
     },
     onStateChange: (MapState) -> Unit = { (state as? MutableState<MapState>)?.value = it },
     onMapViewClick: (latitude: Double, longitude: Double) -> Boolean = { lat, lon -> true },
-    markers: List<MarkerData>
+    markers: List<MarkerData>,
+    routes: List<List<GeoPt>>
 ) {
     val viewScope = rememberCoroutineScope()
     val ioScope = remember { CoroutineScope(SupervisorJob(viewScope.coroutineContext.job) + getDispatcherIO()) }
@@ -66,6 +67,7 @@ public fun MapView(
         InternalMapState(width, height, state.value.scale, markers = markers)
             .copyAndChangeCenter(center)
     }
+    val routesInPixels = routes.map { it.map { internalState.geoToDisplay(it) } }
     val displayTiles: List<DisplayTileWithImage<TileImage>> by derivedStateOf {
         val calcTiles: List<DisplayTileAndTile> = internalState.calcTiles()
         val tilesToDisplay: MutableList<DisplayTileWithImage<TileImage>> = mutableListOf()
@@ -120,7 +122,8 @@ public fun MapView(
             onStateChange(internalState.copy(width = w, height = h).toExternalState())
         },
         mapState = internalState,
-        markers = internalState.markers
+        markers = internalState.markers,
+        routes = routesInPixels
     )
 }
 

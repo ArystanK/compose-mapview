@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -35,7 +36,8 @@ fun MapViewAndroidDesktop(
     onMove: (Int, Int) -> Unit,
     updateSize: (width: Int, height: Int) -> Unit,
     mapState: InternalMapState,
-    markers: List<MarkerData>
+    markers: List<MarkerData>,
+    routes: List<List<Pt>>
 ) {
     var previousMoveDownPos by remember { mutableStateOf<Offset?>(null) }
     var previousPressTime by remember { mutableStateOf(0L) }
@@ -143,9 +145,14 @@ fun MapViewAndroidDesktop(
                 }
             }
         }
-        drawPath(path = Path().apply {
-            addRect(Rect(0f, 0f, size.width, size.height))
-        }, color = Color.Red, style = Stroke(4f))
+        routes.forEach { route ->
+            drawPoints(
+                points = route.map { it.toOffset() },
+                pointMode = PointMode.Polygon,
+                color = Color.Red,
+                strokeWidth = 3f
+            )
+        }
     }
 
     MarkerComposer(
